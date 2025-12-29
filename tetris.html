@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シンプルテトリス</title>
+    <style>
+        body { background: #333; color: white; text-align: center; font-family: sans-serif; }
+        canvas { border: 2px solid white; background: #000; }
+        .info { margin-top: 10px; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <h1>テトリス</h1>
+    <canvas id="tetris" width="240" height="400"></canvas>
+    <div class="info">スコア: <span id="score">0</span></div>
+    <p>操作: ← → で移動 / ↓ で加速 / ↑ で回転</p>
+
+    <script>
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
+        context.scale(20, 20);
+
+        // ブロックの消去処理
+        function arenaSweep() {
+            let rowCount = 1;
+            outer: for (let y = arena.length - 1; y > 0; --y) {
+                for (let x = 0; x < arena[y].length; ++x) {
+                    if (arena[y][x] === 0) continue outer;
+                }
+                const row = arena.splice(y, 1)[0].fill(0);
+                arena.unshift(row);
+                ++y;
+                score += rowCount * 10;
+            }
+        }
+
+        // 衝突判定
+        function collide(arena, player) {
+            const [m, o] = [player.matrix, player.pos];
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // ブロックの形を作成
+        function createPiece(type) {
+            if (type === 'T') return [[0, 1, 0], [1, 1, 1], [0, 0, 0]];
+            if (type === 'O') return [[2, 2], [2, 2]];
+            if (type === 'L') return [[0, 3, 0], [0, 3, 0], [0, 3, 3]];
+            if (type === 'J') return [[0, 4, 0], [0, 4, 0], [4, 4, 0]];
+            if (type === 'I') return [[0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0]];
+            if (type === 'S') return [[0, 6, 6], [6, 6, 0], [0, 0, 0]];
+            if (type === 'Z') return [[7, 7, 0], [0, 7, 7], [0, 0, 0]];
+        }
+
+        // 描画処理
+        function draw() {
+            context.fillStyle = '#000';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(player.matrix, player.pos);
+        }
+
+        function drawMatrix(matrix, offset) {
+            matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        context.fillStyle = ['#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'][value - 1];
+                        context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                });
+            });
+        }
+
+        // 合体処理
+        function merge(arena, player) {
+            player.matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) arena[y + player.pos.y][x + player.pos.x] = value;
+                });
+            });
+        }
+
+        // 回転処理
+        function rotate(matrix, dir) {
+            for (let y = 0; y < matrix.length; ++y) {
+ for（let x = 0; x < y; ++x）{
+ [行射[x][y], 行射[y][x]] = [行射[y][x], 行射[x][y]];
+                }
+            }
+ if（dir > 0) 行列。forEach（行 => 行。這行());
+ それ以外の場合はmatrix。逆行();
+        }
+
+ プラタプラタプラ() {
+ ・・・・・。・ス。y++;
+ if（collide（衝突する、衝突する）) {
+ ・・・・・。・ス。y--;
+ ・マーヸ（モ、プレイー）;
+ ・・・・・();
+ サササ();
+ ヤツガツガツ();
+            }
+ dropCounter = 0;
+        }
+
+ 関数 playerMove（dir）{
+ ・・・・・。・ス。x += dir;
+ if（collide（arena, player）) んんんん。・ス。x -= dir;
+        }
+
+ 関数 playerReset() {
+ const = 'ILJOTSZ';
+ ・・・・・。・・・・・ = createPiece（・・・・[・・・・。長さ * 数学。ササ() | 0]);
+ ・・・・・。・ス。y = 0;
+ ・・・・・。・ス。x =（アリナ[0]。長た / 2 | 0) -（イヤ。行列[0]。長た / 2 | 0)
+ if（collide（衝突する、衝突する）) {
+ ・・・・・。forEach（行 => 行。(0) いちゃいちゃいちゃいちゃ
+ ササ = 0;
+ タカタカタ();
+            }
+        }
+
+ ディル（dir）{
+ const pos = ・・・・・。・ス。x;
+ ササ = 1 ササ
+ 回転（プイヤー。カワ）;
+ while（collide（衝突する、衝突する）) {
+ ・・・・・。・ス。x += りんちん；
+ = -（ガンガン +（ガンガン > 0 ？1: -1));
+ if（ア・ア・ア >・レイヤ。行列[0]。長た）{
+ 回転（プイヤー。カワ）;
+ ・・・・・。・ス。x = pos;
+ 我る；
+                }
+            }
+        }
+
+ dropCounter = 0 かさつ
+ 1000 ちょう
+ lastTime = 0 かしら
+
+ 更新（時間 = 0) {
+ const deltaTime = time - lastTime;
+ lastTime = 時間；
+ dropCounter += deltaTime;
+ if（dropCounter > dropInterval）playerDrop();
+ 描画();
+ requestAnimationFrame（更新）;
+        }
+
+ 関水 updateScore() {
+ 文書。getElementById('サ')。innertext = インナーテキスト；
+        }
+
+ const アリーナ = 配列。from({長さ: 20}, () => 配列(12)。(0) いちゃいちゃいちゃいちゃ
+ const player = { pos: {x: 0, y: 0}, matrix: null };
+ 0 0 0 0
+
+ 文書。addEventListener('keydown', キーダウン => {
+ if（ツンツン。プラタクラの移女 === 37) プラタクラの移女(-1);
+ else if（ツンツン。そちょうちゃん移女 === 39) そちょうちゃん移女(1);
+ たんしゅう（たんしゅう。プレイヤードロップ(== 40) playerDrop();
+ else if（ツンツン。・キャーキャー転 === 38) ・キャーキャー転(1);
+ });
+
+ ・・・・・();
+ タカタカタ();
+ カロン();
+ </やれやれ>
+</体>
+</html>
